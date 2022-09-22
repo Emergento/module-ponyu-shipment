@@ -19,5 +19,4 @@ interface ShipmentManagementInterface
      * @throws LocalizedException
      */
     public function createShipment(ShipmentInterface $shipment): array;
-
 }

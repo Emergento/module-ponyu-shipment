@@ -85,5 +85,4 @@ class ShipmentManagement implements ShipmentManagementInterface
             'deliveryDateEnd' => $ponyUResponse['confirmedRequestedDeliveryRangeEndDate']
         ];
     }
-
 }

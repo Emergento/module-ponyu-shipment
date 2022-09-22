@@ -20,11 +20,22 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Create a shipment on PonyU
- * Save the necessary information on the shipment object and notify to the customer the shipment, including the delivery information..
+ * Save the necessary information on the shipment object.
+ * Notify to the customer of the shipment, including the delivery information.
  * @api
  */
 class CreateShipmentOnPonyU implements ObserverInterface
 {
+    /**
+     * @param OrderRepositoryInterface $orderRepository
+     * @param ShipmentRepositoryInterface $shipmentRepository
+     * @param LoggerInterface $logger
+     * @param SetTrackingFromPonyU $setTrackingFromPonyU
+     * @param ShipmentManagementInterface $ponyUShipmentManagement
+     * @param IsPonyUOrder $isPonyUOrder
+     * @param NotifyShipmentToCustomer $notifyShipmentToCustomer
+     * @param ShipmentCommentInterfaceFactory $shipmentCommentFactory
+     */
     public function __construct(
         private readonly OrderRepositoryInterface        $orderRepository,
         private readonly ShipmentRepositoryInterface     $shipmentRepository,
@@ -38,6 +49,8 @@ class CreateShipmentOnPonyU implements ObserverInterface
     }
 
     /**
+     * Create shipment
+     *
      * @param Observer $observer
      * @return void
      */
@@ -60,10 +73,11 @@ class CreateShipmentOnPonyU implements ObserverInterface
             $this->orderRepository->save($shipment->getOrder());
             $this->logger->error($e->getMessage());
         }
-
     }
 
     /**
+     * Set comments on shipment
+     *
      * @param ShipmentInterface $shipment
      * @param array $ponyUShipmentConfirmation
      * @return void
@@ -71,17 +85,34 @@ class CreateShipmentOnPonyU implements ObserverInterface
      */
     private function setDeliveryCommentsOnShipment(ShipmentInterface $shipment, array $ponyUShipmentConfirmation): void
     {
-            $pickupComment = $this->shipmentCommentFactory->create();
-            $deliveryComment = $this->shipmentCommentFactory->create();
+        $pickupComment = $this->shipmentCommentFactory->create();
+        $deliveryComment = $this->shipmentCommentFactory->create();
 
-            $confirmedPickupDueDate = new \DateTime($ponyUShipmentConfirmation['confirmedPickupDueDate'], new \DateTimeZone(PonyUShippingMethodConfig::PONYU_TIMEZONE));
-            $confirmedDeliveryStartDate = new \DateTime($ponyUShipmentConfirmation['confirmedRequestedDeliveryRangeStartDate'], new \DateTimeZone(PonyUShippingMethodConfig::PONYU_TIMEZONE));
-            $confirmedDeliveryEndDate = new \DateTime($ponyUShipmentConfirmation['confirmedRequestedDeliveryRangeEndDate'], new \DateTimeZone(PonyUShippingMethodConfig::PONYU_TIMEZONE));
+        $confirmedPickupDueDate = new \DateTime(
+            $ponyUShipmentConfirmation['confirmedPickupDueDate'],
+            new \DateTimeZone(PonyUShippingMethodConfig::PONYU_TIMEZONE)
+        );
+        $confirmedDeliveryStartDate = new \DateTime(
+            $ponyUShipmentConfirmation['confirmedRequestedDeliveryRangeStartDate'],
+            new \DateTimeZone(PonyUShippingMethodConfig::PONYU_TIMEZONE)
+        );
+        $confirmedDeliveryEndDate = new \DateTime(
+            $ponyUShipmentConfirmation['confirmedRequestedDeliveryRangeEndDate'],
+            new \DateTimeZone(PonyUShippingMethodConfig::PONYU_TIMEZONE)
+        );
 
-            $pickupComment->setComment(__('Package will be picked up from %1 on %2', $confirmedPickupDueDate->format('H:i'), $confirmedPickupDueDate->format('d/m/Y')));
-            $deliveryComment->setComment(__('Package will be delivered from %1 to %2 on %3', $confirmedDeliveryStartDate->format('H:i'), $confirmedDeliveryEndDate->format('H:i'), $confirmedDeliveryStartDate->format('d/m/Y')));
+        $pickupComment->setComment(__(
+            'Package will be picked up from %1 on %2',
+            $confirmedPickupDueDate->format('H:i'),
+            $confirmedPickupDueDate->format('d/m/Y')
+        ));
+        $deliveryComment->setComment(__(
+            'Package will be delivered from %1 to %2 on %3',
+            $confirmedDeliveryStartDate->format('H:i'),
+            $confirmedDeliveryEndDate->format('H:i'),
+            $confirmedDeliveryStartDate->format('d/m/Y')
+        ));
 
-            $shipment->setComments([$pickupComment, $deliveryComment]);
+        $shipment->setComments([$pickupComment, $deliveryComment]);
     }
-
 }

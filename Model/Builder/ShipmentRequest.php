@@ -24,6 +24,12 @@ class ShipmentRequest
     ) {
     }
 
+    /**
+     * Generate shipment object
+     *
+     * @param ShipmentInterface $shipment
+     * @return array
+     */
     public function execute(ShipmentInterface $shipment): array
     {
         $this->shipment = $shipment;
@@ -37,6 +43,11 @@ class ShipmentRequest
         ];
     }
 
+    /**
+     * Get order info
+     *
+     * @return array
+     */
     private function getOrderInfo(): array
     {
         $ponyUSlot = json_decode($this->shipment->getOrder()->getPonyuSlot(), true);
@@ -82,9 +93,13 @@ class ShipmentRequest
                 'addressInfo' => ''
             ];
         }
-
     }
 
+    /**
+     * Get customer info
+     *
+     * @return array
+     */
     private function getCustomerInfo(): array
     {
         $shippingAddress = $this->shipment->getShippingAddress();
@@ -99,6 +114,11 @@ class ShipmentRequest
         ];
     }
 
+    /**
+     * Get payment Info
+     *
+     * @return array
+     */
     private function getPaymentInfo(): array
     {
         return [
@@ -107,5 +127,4 @@ class ShipmentRequest
             'total' => $this->shipment->getOrder()->getGrandTotal()
         ];
     }
-
 }

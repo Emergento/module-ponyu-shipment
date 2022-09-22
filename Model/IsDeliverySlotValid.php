@@ -9,7 +9,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\InventoryDistanceBasedSourceSelectionApi\Api\Data\LatLngInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
-
 /**
  * Check if a slot is still valid for a delivery.
  * @api

@@ -18,7 +18,6 @@ class NotifyShipmentToCustomer
         private readonly ShipmentCommentCreationInterfaceFactory $shipmentCommentCreationFactory,
         private readonly GenerateDeliveryInformationLabel $generateDeliveryInformationLabel,
     ) {
-
     }
 
     public function execute(ShipmentInterface $shipment): void
