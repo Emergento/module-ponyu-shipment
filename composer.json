@@ -2,6 +2,7 @@
   "name": "emergento/module-ponyu-shipment",
   "description": "Create PonyU Shipment",
   "type": "magento2-module",
+  "version": "1.0.0",
   "require": {
       "php": "~8.1",
       "magento/framework": "103.0.*"
